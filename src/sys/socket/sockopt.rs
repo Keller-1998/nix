@@ -1618,3 +1618,157 @@ impl<T: AsMut<[u8]>> Get<CString> for GetCString<T> {
             .to_owned()
     }
 }
+
+/// Used to collect information about this socket.
+/// Eqivalent of the linux kernel tcp_info struct in /usr/include/netinet/tcp.h.
+#[cfg(target_os = "linux")]
+#[repr(C)]
+#[derive(Copy, Clone, Debug)]
+pub struct TcpInfo {
+    /// tcpi_state
+	pub tcpi_state: u8,
+    /// tcpi_ca_state
+	pub tcpi_ca_state: u8,
+    /// tcpi_retransmits
+	pub tcpi_retransmits: u8,
+    /// tcpi_probes
+	pub tcpi_probes: u8,
+    /// tcpi_backoff
+	pub tcpi_backoff: u8,
+    /// tcpi_options
+	pub tcpi_options: u8,
+    /// First 4 bit correspond to tcpi_snd_wscale, last 4 bit to tcpi_rcv_wscale
+	pub tcpi_snd_wscale_rcv_wscale: u8,
+    // /// First bit corresponds to tcpi_delivery_rate_app_limited, next 2 bit to tcpi_fastopen_client_fail
+	// pub tcpi_delivery_rate_app_limited_fastopen_client_fail: u8,
+
+    /// tcpi_rto
+	pub tcpi_rto: u32,
+    /// tcpi_ato
+	pub tcpi_ato: u32,
+    /// tcpi_snd_mss
+	pub tcpi_snd_mss: u32,
+    /// tcpi_rcv_mss
+	pub tcpi_rcv_mss: u32,
+
+    /// tcpi_unacked
+	pub tcpi_unacked: u32,
+    /// tcpi_sacked
+	pub tcpi_sacked: u32,
+    /// tcpi_lost
+	pub tcpi_lost: u32,
+    /// tcpi_retrans
+	pub tcpi_retrans: u32,
+    /// tcpi_fackets
+	pub tcpi_fackets: u32,
+
+	// Times.
+    /// tcpi_last_data_sent
+	pub tcpi_last_data_sent: u32,
+    /// tcpi_last_ack_sent
+	pub tcpi_last_ack_sent: u32,     // Not remembered, sorry.
+    /// tcpi_last_data_recv
+	pub tcpi_last_data_recv: u32,
+    /// tcpi_last_ack_recv
+	pub tcpi_last_ack_recv: u32,
+
+	// Metrics.
+    /// tcpi_pmtu
+	pub tcpi_pmtu: u32,
+    /// tcpi_rcv_ssthresh
+	pub tcpi_rcv_ssthresh: u32,
+    /// tcpi_rtt
+	pub tcpi_rtt: u32,
+    /// tcpi_rttvar
+	pub tcpi_rttvar: u32,
+    /// tcpi_snd_ssthresh
+	pub tcpi_snd_ssthresh: u32,
+    /// tcpi_snd_cwnd
+	pub tcpi_snd_cwnd: u32,
+    /// tcpi_advmss
+	pub tcpi_advmss: u32,
+    /// tcpi_reordering
+	pub tcpi_reordering: u32,
+
+    /// tcpi_rcv_rtt
+	pub tcpi_rcv_rtt: u32,
+    /// tcpi_rcv_space
+	pub tcpi_rcv_space: u32,
+
+    /// tcpi_total_retrans
+	pub tcpi_total_retrans: u32,
+
+    // /// tcpi_pacing_rate
+	// pub tcpi_pacing_rate: u64,
+    // /// tcpi_max_pacing_rate
+	// pub tcpi_max_pacing_rate: u64,
+    // /// RFC4898 tcpEStatsAppHCThruOctetsAcked
+	// pub tcpi_bytes_acked: u64,
+    // /// RFC4898 tcpEStatsAppHCThruOctetsReceived
+	// pub tcpi_bytes_received: u64,
+    // /// RFC4898 tcpEStatsPerfSegsOut
+	// pub tcpi_segs_out: u32,
+    // /// RFC4898 tcpEStatsPerfSegsIn
+	// pub tcpi_segs_in: u32,
+
+    // /// tcpi_notsent_bytes
+	// pub tcpi_notsent_bytes: u32,
+    // /// tcpi_min_rtt
+	// pub tcpi_min_rtt: u32,
+    // /// RFC4898 tcpEStatsDataSegsIn
+	// pub tcpi_data_segs_in: u32,
+    // /// RFC4898 tcpEStatsDataSegsOut
+	// pub tcpi_data_segs_out: u32,
+
+    // /// tcpi_delivery_rate
+	// pub tcpi_delivery_rate: u64,
+
+    // /// Time (usec) busy sending data
+	// pub tcpi_busy_time: u64,
+    // /// Time (usec) limited by receive window
+	// pub tcpi_rwnd_limited: u64,
+    // /// Time (usec) limited by send buffer
+	// pub tcpi_sndbuf_limited: u64,
+
+    // /// tcpi_delivered
+	// pub tcpi_delivered: u32,
+    // /// tcpi_delivered_ce
+	// pub tcpi_delivered_ce: u32,
+
+    // /// RFC4898 tcpEStatsPerfHCDataOctetsOut
+	// pub tcpi_bytes_sent: u64,
+    // /// RFC4898 tcpEStatsPerfOctetsRetrans
+	// pub tcpi_bytes_retrans: u64,
+    // /// RFC4898 tcpEStatsStackDSACKDups
+	// pub tcpi_dsack_dups: u32,
+    // /// reordering events seen
+	// pub tcpi_reord_seen: u32,
+
+    // /// Out-of-order packets received
+	// pub tcpi_rcv_ooopack: u32,
+
+    // /// peer's advertised receive window after scaling (bytes)
+	// pub tcpi_snd_wnd: u32,
+    // /// local advertised receive window after scaling (bytes)
+    // pub tcpi_rcv_wnd: u32,
+
+    // /// PLB or timeout triggered rehash attempts
+	// pub tcpi_rehash: u32,
+
+    // /// Total number of RTO timeouts, including SYN/SYN-ACK and recurring timeouts.
+	// pub tcpi_total_rto: u16,
+    // /// Total number of RTO recoveries, including any unfinished recovery.
+    // pub tcpi_total_rto_recoveries: u16,
+    // /// Total time spent in RTO recoveries in milliseconds, including any unfinished recovery.
+    // pub tcpi_total_rto_time: u32,
+}
+
+#[cfg(target_os = "linux")]
+sockopt_impl!(
+    /// Return a data structure with tcp statistic values.
+    TCPinfo,
+    GetOnly,
+    libc::IPPROTO_TCP,
+    libc::TCP_INFO,
+    TcpInfo
+);
